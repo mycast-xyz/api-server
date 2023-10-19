@@ -1,0 +1,37 @@
+{
+  "name": "mycast-api-server",
+  "version": "1.0.0",
+  "description": "mycast api server",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "tslint --project .",
+    "build": "tsc",
+    "build-watch": "tsc --watch",
+    "pm2": "sudo pm2 start dist/index.js --name api"
+  },
+  "author": "eruhoon",
+  "license": "ISC",
+  "dependencies": {
+    "@types/body-parser": "^1.19.4",
+    "axios": "^0.21.1",
+    "body-parser": "^1.20.2",
+    "cheerio": "^1.0.0-rc.5",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "md5": "^2.3.0",
+    "mysql": "^2.18.1",
+    "mysql2": "^2.2.5",
+    "typescript": "^5.2.2"
+  },
+  "devDependencies": {
+    "@types/cheerio": "^0.22.23",
+    "@types/cors": "^2.8.9",
+    "@types/express": "^4.17.9",
+    "@types/md5": "^2.3.1",
+    "@types/mysql": "^2.15.17",
+    "@types/node": "^14.14.20",
+    "@types/redis": "^2.8.28",
+    "dotenv": "^8.2.0"
+  }
+}

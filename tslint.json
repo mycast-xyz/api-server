@@ -1,0 +1,31 @@
+{
+    "defaultSeverity": "error",
+    "extends": ["tslint:recommended"],
+    "jsRules": {},
+    "rules": {
+        "arrow-parens": false,
+        "quotemark": false,
+        "eofline": true,
+        "indent": false,
+        "interface-over-type-literal": false,
+        "member-ordering": [
+            true,
+            {
+                "order": [
+                    "public-static-field",
+                    "protected-static-field",
+                    "private-static-field"
+                ]
+            }
+        ],
+        "interface-name": false,
+        "object-literal-key-quotes": false,
+        "object-literal-sort-keys": false,
+        "trailing-comma": false,
+        "radix": false
+    },
+    "rulesDirectory": [],
+    "linterOptions": {
+        "exclude": ["node_modules/*"]
+    }
+}
