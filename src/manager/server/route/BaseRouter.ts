@@ -10,6 +10,7 @@ export class BaseRouter {
         'https://test.mycast.xyz',
         'http://localhost:4200',
         'http://localhost:5000',
+        'http://localhost:5173',
         'http://mycast.xyz:10080',
     ];
 
