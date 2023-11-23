@@ -14,7 +14,7 @@ export class LolGallLoader extends BaseAsyncLoader<null, LolGall[]> {
 
     public async getResult(input: null): Promise<LolGall[] | null> {
         const host = 'https://gall.dcinside.com';
-        const query = 'id=leagueoflegends4&exception_mode=recommend';
+        const query = 'id=leagueoflegends5&exception_mode=recommend';
         const url = `${host}/board/lists?${query}`;
         try {
             const res = await Axios.get(url);
