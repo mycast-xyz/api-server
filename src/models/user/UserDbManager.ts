@@ -103,6 +103,7 @@ export class UserDbManager {
             'twitch_id as twitchId',
             'chzzk_id as chzzkId',
             'youtube_handle as youtubeHandle',
+            'youtube_video_id as youtubeVideoId',
         ];
         const columnString = columns.join();
         const query = `SELECT ${columnString} FROM user WHERE private_key = ?`;
@@ -188,4 +189,5 @@ export type UserStreamDao = {
     twitchId: string;
     chzzkId: string;
     youtubeHandle: string;
+    youtubeVideoId: string;
 };
