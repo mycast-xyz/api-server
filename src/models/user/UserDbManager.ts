@@ -101,6 +101,8 @@ export class UserDbManager {
             'LEFT(hash, 5) as localHash',
             'afreeca_id as afreecaId',
             'twitch_id as twitchId',
+            'chzzk_id as chzzkId',
+            'youtube_handle as youtubeHandle',
         ];
         const columnString = columns.join();
         const query = `SELECT ${columnString} FROM user WHERE private_key = ?`;
@@ -119,17 +121,29 @@ export class UserDbManager {
         platform: string,
         backgroundImage: string,
         afreecaId: string,
-        twitchId: string
+        twitchId: string,
+        chzzkId: string = '',
+        youtubeHandle: string = ''
     ): Promise<boolean> {
         const columns = [
             'broadcast_class',
             'broadcast_bgimg',
             'afreeca_id',
             'twitch_id',
+            'chzzk_id',
+            'youtube_handle',
         ];
         const colString = columns.map((c) => `${c} = ?`).join(',');
         const query = `UPDATE user SET ${colString} WHERE private_key = ?`;
-        const args = [platform, backgroundImage, afreecaId, twitchId, privKey];
+        const args = [
+            platform,
+            backgroundImage,
+            afreecaId,
+            twitchId,
+            chzzkId,
+            youtubeHandle,
+            privKey,
+        ];
         try {
             const result = await this.#dbModel.query(query, args);
             return true;
@@ -169,4 +183,6 @@ export type UserStreamDao = {
     localHash: string;
     afreecaId: string;
     twitchId: string;
+    chzzkId: string;
+    youtubeHandle: string;
 };
