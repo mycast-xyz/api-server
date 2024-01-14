@@ -38,7 +38,6 @@ export class ExpressServerManager implements IServerManager {
     private mIndexUri: string | null;
     private mRiotApiCode: string | null;
     private mAnimationLoader: Loader<string, AnimationData> | null;
-    private mAvActressLoader: Loader<string, Av.Actress> | null;
     private mAzurLaneLoader: Loader<string, AzurLane.ShipInfo> | null;
     private mBookLoader: Loader<string, BookInfo> | null;
     private mCqWarriorLoader: Loader<
@@ -60,7 +59,6 @@ export class ExpressServerManager implements IServerManager {
         this.mIndexUri = null;
         this.mRiotApiCode = null;
         this.mAnimationLoader = null;
-        this.mAvActressLoader = null;
         this.mAzurLaneLoader = null;
         this.mBookLoader = null;
         this.mCqWarriorLoader = null;
@@ -82,10 +80,6 @@ export class ExpressServerManager implements IServerManager {
 
     public setAnimationLoader(loader: Loader<string, AnimationData>): void {
         this.mAnimationLoader = loader;
-    }
-
-    public setAvActressLoader(loader: Loader<string, Av.Actress>): void {
-        this.mAvActressLoader = loader;
     }
 
     public setAlShipLoader(loader: Loader<string, AzurLane.ShipInfo>): void {
@@ -163,18 +157,6 @@ export class ExpressServerManager implements IServerManager {
             this.mAnimationLoader.load(animationName, (result) => {
                 res.json(result);
             });
-        });
-
-        app.get('/av/actress/:name', (req, res) => {
-            if (this.mAvActressLoader === null) {
-                res.json(null);
-                return;
-            } else {
-                const name = req.params.name;
-                this.mAvActressLoader.load(name, (actress) => {
-                    res.json(actress);
-                });
-            }
         });
 
         app.get('/azurlane/ship/:ship_name', (req, res) => {
