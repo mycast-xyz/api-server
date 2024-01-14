@@ -1,4 +1,3 @@
-import * as AdultVideo from '../../models/AdultVideo';
 import { AnimationData } from '../../models/Animation';
 import * as AzurLane from '../../models/AzurLane';
 import { BookInfo } from '../../models/BookInfo';
@@ -14,7 +13,6 @@ export interface IServerManager {
     setRiotApiCode(code: string): void;
 
     setAnimationLoader(loader: Loader<string, AnimationData>): void;
-    setAvActressLoader(loader: Loader<string, AdultVideo.Actress>): void;
     setAlShipLoader(loader: Loader<string, AzurLane.ShipInfo>): void;
     setBookLoader(loader: Loader<string, BookInfo>): void;
     setCqWarriorLoader(

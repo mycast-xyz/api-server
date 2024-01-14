@@ -4,7 +4,6 @@ import { readFileSync } from 'fs';
 import * as http from 'http';
 import * as https from 'https';
 import { Config } from '../../Config';
-import * as Av from '../../models/AdultVideo';
 import { AnimationData } from '../../models/Animation';
 import * as AzurLane from '../../models/AzurLane';
 import { BookInfo } from '../../models/BookInfo';
