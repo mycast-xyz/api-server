@@ -122,8 +122,9 @@ export class UserDbManager {
         backgroundImage: string,
         afreecaId: string,
         twitchId: string,
-        chzzkId: string = '',
-        youtubeHandle: string = ''
+        chzzkId: string,
+        youtubeHandle: string,
+        youtubeVideoId: string
     ): Promise<boolean> {
         const columns = [
             'broadcast_class',
@@ -132,6 +133,7 @@ export class UserDbManager {
             'twitch_id',
             'chzzk_id',
             'youtube_handle',
+            'youtube_video_id',
         ];
         const colString = columns.map((c) => `${c} = ?`).join(',');
         const query = `UPDATE user SET ${colString} WHERE private_key = ?`;
@@ -142,6 +144,7 @@ export class UserDbManager {
             twitchId,
             chzzkId,
             youtubeHandle,
+            youtubeVideoId,
             privKey,
         ];
         try {

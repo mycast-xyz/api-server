@@ -90,7 +90,15 @@ export class UserRouter extends BaseRouter {
         res: Response<PutPlatformDto>
     ): void {
         const { userKey } = req.params;
-        const { platform, backgroundImage, afreecaId, twitchId } = req.body;
+        const {
+            platform,
+            backgroundImage,
+            afreecaId,
+            twitchId,
+            chzzkId,
+            youtubeHandle,
+            youtubeVideoId,
+        } = req.body;
 
         if (!this.isPlatformValid(platform)) {
             res.send({ result: false });
@@ -98,7 +106,16 @@ export class UserRouter extends BaseRouter {
         }
 
         this.mUserDb
-            .setStream(userKey, platform, backgroundImage, afreecaId, twitchId)
+            .setStream(
+                userKey,
+                platform,
+                backgroundImage,
+                afreecaId,
+                twitchId,
+                chzzkId,
+                youtubeHandle,
+                youtubeVideoId
+            )
             .then((result) => {
                 res.send({ result });
             })
