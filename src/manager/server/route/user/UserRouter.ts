@@ -151,7 +151,9 @@ export class UserRouter extends BaseRouter {
             platform === 'local' ||
             platform === 'twitch' ||
             platform === 'totoro' ||
-            platform === 'afreeca'
+            platform === 'afreeca' ||
+            platform === 'youtube' ||
+            platform === 'chzzk'
         );
     }
 }
