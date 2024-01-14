@@ -164,6 +164,9 @@ type UserStreamDto = {
     localId: string;
     afreecaId: string;
     twitchId: string;
+    youtubeHandle: string;
+    youtubeVideoId: string;
+    chzzkId: string;
 };
 
 type PutPlatformDto = {
