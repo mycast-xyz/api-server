@@ -6,6 +6,7 @@ import { TwitchStagedStreamLoader } from '../../../../models/stream/twitch/Twitc
 import { BaseRouter } from '../BaseRouter';
 import { YoutubeStagedStreamLoader } from '../../../../models/stream/youtube/YoutubeStagedStreamLoader';
 import { Config } from '../../../../Config';
+import { ChzzkStagedStreamLoader } from '../../../../models/stream/chzzk/ChzzkStagedStreamLoader';
 
 export class StreamRouter extends BaseRouter {
     private mDbManager: StreamDbManager;
@@ -24,6 +25,9 @@ export class StreamRouter extends BaseRouter {
         );
         this.getRouter().get('/youtube/:keyId', (req, res) =>
             this.onYoutubeSearch(req, res)
+        );
+        this.getRouter().get('/chzzk/:keyId', (req, res) =>
+            this.#onChzzkSearch(req, res)
         );
     }
 
@@ -59,6 +63,18 @@ export class StreamRouter extends BaseRouter {
     onYoutubeSearch(req: Request<any>, res: Response<StagedStream | null>) {
         const { keyId } = req.params;
         new YoutubeStagedStreamLoader(Config.YOUTUBE_API_KEY)
+            .load(keyId)
+            .then((result) => {
+                res.json(result);
+            })
+            .catch((e) => {
+                res.json(null);
+            });
+    }
+
+    #onChzzkSearch(req: Request<any>, res: Response<StagedStream | null>) {
+        const { keyId } = req.params;
+        new ChzzkStagedStreamLoader()
             .load(keyId)
             .then((result) => {
                 res.json(result);
