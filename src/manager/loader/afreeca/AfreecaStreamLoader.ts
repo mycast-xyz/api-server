@@ -8,7 +8,7 @@ export class AfreecaStreamLoader extends BaseAsyncLoader<
 > {
     public async getResult(id: string): Promise<AfreecaResult | null> {
         try {
-            const url = `http://sch.afreeca.com/api.php?m=liveSearch&v=1.0&szOrder=&c=EUC-KR&szKeyword=${id}`;
+            const url = `http://sch.sooplive.co.kr/api.php?m=liveSearch&v=1.0&szOrder=score&c=EUC-KR&szKeyword=${id}`;
 
             const { data: json } = await axios.get<RawResult>(url);
             const realBroad = json.REAL_BROAD;
