@@ -2,15 +2,16 @@ import { Request, Response, Router } from 'express';
 import { EmojiDbManager } from '../../../../models/emoji/EmojiDbManager';
 import { EmojiHandler } from '../../../../models/emoji/EmojiHandler';
 import { Logger } from '../../../../util/Logger';
+import { BaseRouter } from '../BaseRouter';
 
-export class EmojiRouter {
+export class EmojiRouter extends BaseRouter {
     #router: Router;
     #logger = new Logger('EmojiRouter');
-    #db: EmojiDbManager;
+    #db: EmojiDbManager = new EmojiDbManager();
 
     constructor() {
+        super();
         this.#router = Router();
-        this.#db = new EmojiDbManager();
 
         this.#router.get('/', this.#getEmojis.bind(this));
         this.#router.get('/:userKey/emojis', (req, res) =>
