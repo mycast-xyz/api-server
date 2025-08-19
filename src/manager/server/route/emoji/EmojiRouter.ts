@@ -1,9 +1,11 @@
 import { Request, Response, Router } from 'express';
 import { EmojiDbManager } from '../../../../models/emoji/EmojiDbManager';
 import { EmojiHandler } from '../../../../models/emoji/EmojiHandler';
+import { Logger } from '../../../../util/Logger';
 
 export class EmojiRouter {
     #router: Router;
+    #logger = new Logger('EmojiRouter');
     #db: EmojiDbManager;
 
     constructor() {
@@ -19,7 +21,10 @@ export class EmojiRouter {
     }
 
     onPost(req: Request, res: Response) {
-        const { privKey, base64 } = req.body;
+        const { privKey, base64, name } = req.body;
+        this.#logger.v(
+            `POST /emoji with privKey: ${privKey}, name: ${name}, base64: ${base64}`
+        );
         new EmojiHandler().saveEmoji(privKey, base64).then((result) => {
             if (result) {
                 res.sendStatus(200);
