@@ -21,8 +21,14 @@ export class EmojiRouter extends BaseRouter {
 
     onPost(req: Request, res: Response) {
         const { privKey, base64, name } = req.body;
+        if (!base64 || typeof base64 !== 'string') {
+            this.#logger.e(`Invalid input`);
+            res.sendStatus(400);
+            return;
+        }
+        const base64Preview = base64.substring(0, 20);
         this.#logger.v(
-            `POST /emoji with privKey: ${privKey}, name: ${name}, base64: ${base64}`
+            `POST /emoji with pk: ${privKey}, name: ${name}, base64: ${base64Preview}...`
         );
         new EmojiHandler().uploadEmoji(privKey, base64, name).then((result) => {
             if (result) {
