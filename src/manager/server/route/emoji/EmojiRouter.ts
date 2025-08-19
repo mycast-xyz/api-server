@@ -5,21 +5,18 @@ import { Logger } from '../../../../util/Logger';
 import { BaseRouter } from '../BaseRouter';
 
 export class EmojiRouter extends BaseRouter {
-    #router: Router;
     #logger = new Logger('EmojiRouter');
     #db: EmojiDbManager = new EmojiDbManager();
 
     constructor() {
         super();
 
-        this.#router = this.getRouter();
-
-        this.#router.get('/', this.#getEmojis.bind(this));
-        this.#router.get('/:userKey/emojis', (req, res) =>
+        this.getRouter().get('/', this.#getEmojis.bind(this));
+        this.getRouter().get('/:userKey/emojis', (req, res) =>
             this.#onUserEmojis(req, res)
         );
-        this.#router.get('/type/:type', this.#getEmojisByType.bind(this));
-        this.#router.post('/', (req, res) => this.onPost(req, res));
+        this.getRouter().get('/type/:type', this.#getEmojisByType.bind(this));
+        this.getRouter().post('/', (req, res) => this.onPost(req, res));
     }
 
     onPost(req: Request, res: Response) {
@@ -36,10 +33,6 @@ export class EmojiRouter extends BaseRouter {
                 return;
             }
         });
-    }
-
-    getRouter(): Router {
-        return this.#router;
     }
 
     async #onUserEmojis(req: Request, res: Response) {
