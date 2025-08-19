@@ -11,7 +11,8 @@ export class EmojiRouter extends BaseRouter {
 
     constructor() {
         super();
-        this.#router = Router();
+
+        this.#router = this.getRouter();
 
         this.#router.get('/', this.#getEmojis.bind(this));
         this.#router.get('/:userKey/emojis', (req, res) =>
