@@ -51,26 +51,18 @@ export class ImageKitHandler {
         }
 
         const content = this.#getImageContent(base64);
-        const uri = 'https://upload.imagekit.io/api/v1/files/upload';
-        const data = {
-            file: content,
-            fileName: fileName,
-        };
-        const opt = {
-            auth: {
-                username: Config.IMAGEKIT_PUBLIC_KEY,
-                password: Config.IMAGEKIT_PRIVATE_KEY,
-            },
-        };
 
         try {
-            const res = await Axios.post<ImageKitResponse>(uri, data, opt);
-            if (res.status !== 200 || !res.data) {
-                return null;
-            }
-            return res.data;
+            const response = await this.#imageKit.upload({
+                file: content, // base64 인코딩된 이미지 데이터
+                fileName: fileName,
+                // 필요하다면 아래 옵션 추가
+                folder: '/emojis',
+                tags: [fileName],
+            });
+            return response as ImageKitData;
         } catch (e) {
-            this.#logger.e('upload error', e);
+            this.#logger.e('uploadBase64 error', e);
             return null;
         }
     }
