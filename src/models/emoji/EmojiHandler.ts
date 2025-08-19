@@ -19,11 +19,16 @@ export class EmojiHandler {
         name: string
     ): Promise<boolean> {
         const uploaderIdx = await this.#getUserIdxByPrivKey(privKey);
+        this.#logger.v(`Uploading emoji for user ${uploaderIdx}: ${name}`);
         const imageKitData = await this.#imageKitHandler.uploadBase64(
             base64,
             name
         );
+        this.#logger.v(
+            `ImageKit upload result: ${JSON.stringify(imageKitData)}`
+        );
         if (!imageKitData) {
+            this.#logger.e('ImageKit upload failed');
             return false;
         }
         this.#logger.v(`Uploaded emoji for user ${uploaderIdx}: ${name}`);
