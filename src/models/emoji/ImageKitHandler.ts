@@ -39,26 +39,40 @@ export class ImageKitHandler {
     }
 
     /**
+     * base64에서 확장자 추출
+     */
+    #getExtensionFromBase64(base64: string): string {
+        const match = base64.match(/^data:image\/([a-zA-Z0-9+]+);base64,/);
+        return match ? match[1] : 'png'; // 기본값 png
+    }
+
+    /**
      * 이미지 업로드 (base64)
      */
     async uploadBase64(
         base64: string,
-        fileName: string
+        fileName?: string
     ): Promise<ImageKitData | null> {
         if (!this.#isImage(base64)) {
             this.#logger.e('uploadBase64: invalid base64');
             return null;
         }
 
+        const ext = this.#getExtensionFromBase64(base64);
+        const safeFileName = fileName
+            ? fileName.endsWith(`.${ext}`)
+                ? fileName
+                : `${fileName}.${ext}`
+            : `image_${Date.now()}.${ext}`;
+
         const content = this.#getImageContent(base64);
 
         try {
             const response = await this.#imageKit.upload({
-                file: content, // base64 인코딩된 이미지 데이터
-                fileName: fileName,
-                // 필요하다면 아래 옵션 추가
-                folder: '/emojis',
-                tags: [fileName],
+                file: content,
+                fileName: safeFileName,
+                folder: 'emojis',
+                tags: [safeFileName],
             });
             return response as ImageKitData;
         } catch (e) {
