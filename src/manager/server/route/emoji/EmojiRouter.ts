@@ -24,7 +24,7 @@ export class EmojiRouter extends BaseRouter {
         this.#logger.v(
             `POST /emoji with privKey: ${privKey}, name: ${name}, base64: ${base64}`
         );
-        new EmojiHandler().saveEmoji(privKey, base64).then((result) => {
+        new EmojiHandler().uploadEmoji(privKey, base64, name).then((result) => {
             if (result) {
                 res.sendStatus(200);
                 res.json();

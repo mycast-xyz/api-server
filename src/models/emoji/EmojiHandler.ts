@@ -1,19 +1,33 @@
 import { Logger } from '../../util/Logger';
+import { DatabaseModel } from '../db/DatabaseModel';
+import { VegaDbModel } from '../db/VegaDbModel';
 import { EmojiDbManager } from './EmojiDbManager';
 import { ImageKitHandler } from './ImageKitHandler';
 
 export class EmojiHandler {
     #logger = new Logger('EmojiHandler');
     #db: EmojiDbManager = new EmojiDbManager();
+    #dbModel: DatabaseModel = new VegaDbModel();
+    #imageKitHandler: ImageKitHandler = new ImageKitHandler();
 
     /**
      * 예시: 새로운 이모지 저장 (구현 필요)
      */
-    public async saveEmoji(privKey: string, base64: string): Promise<boolean> {
-        // TODO: privKey 인증, base64 디코딩 및 저장 로직 구현
-        // 예시: DB에 저장 후 true/false 반환
-        //new ImageKitHandler().uploadBase64()
-        return false;
+    public async uploadEmoji(
+        privKey: string,
+        base64: string,
+        name: string
+    ): Promise<boolean> {
+        const uploaderIdx = await this.#getUserIdxByPrivKey(privKey);
+        const imageKitData = await this.#imageKitHandler.uploadBase64(
+            base64,
+            name
+        );
+        if (!imageKitData) {
+            return false;
+        }
+        this.#logger.v(`Uploaded emoji for user ${uploaderIdx}: ${name}`);
+        return true;
     }
 
     /**
@@ -21,5 +35,14 @@ export class EmojiHandler {
      */
     public async getUserEmojis(userIdx: number) {
         return await this.#db.getEmojisByUser(userIdx);
+    }
+
+    async #getUserIdxByPrivKey(privKey: string): Promise<number> {
+        const query = `SELECT idx FROM user WHERE private_key = ?`;
+        const rows: any[] = await this.#dbModel.query(query, [privKey]);
+        if (!rows || rows.length < 1) {
+            throw new Error(`load: error ${rows}`);
+        }
+        return rows[0].idx;
     }
 }
