@@ -49,10 +49,8 @@ export class ImageKitHandler {
     /**
      * 이미지 업로드 (base64)
      */
-    async uploadBase64(
-        base64: string,
-        fileName?: string
-    ): Promise<ImageKitData | null> {
+    async uploadBase64(base64: string, fileName?: string): Promise<any | null> {
+        // 임시코드
         if (!this.#isImage(base64)) {
             this.#logger.e('uploadBase64: invalid base64');
             return null;
@@ -74,7 +72,7 @@ export class ImageKitHandler {
                 folder: 'emojis',
                 tags: [safeFileName],
             });
-            return response as ImageKitData;
+            return response;
         } catch (e) {
             this.#logger.e('uploadBase64 error', e);
             return null;
