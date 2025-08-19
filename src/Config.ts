@@ -43,4 +43,13 @@ export class Config {
 
     public static readonly YOUTUBE_API_KEY: string =
         process.env.YOUTUBE_API_KEY ?? '';
+
+    static readonly IMAGEKIT_PUBLIC_KEY: string =
+        process.env.IMAGEKIT_PUBLIC_KEY || '';
+
+    static readonly IMAGEKIT_PRIVATE_KEY: string =
+        process.env.IMAGEKIT_PRIVATE_KEY || '';
+
+    static readonly IMAGEKIT_ENDPOINT: string =
+        process.env.IMAGEKIT_ENDPOINT || '';
 }

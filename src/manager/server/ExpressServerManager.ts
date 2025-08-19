@@ -20,6 +20,7 @@ import { Loader } from '../loader/common/Loader';
 import { LolGallLoader } from '../loader/lolgall/LolGallLoader';
 import { OnnadaCvLoader } from '../loader/onnada/OnnadaCvLoader';
 import { IServerManager } from './IServerManager';
+import { EmojiRouter } from './route/emoji/EmojiRouter';
 import { InvenRouter } from './route/inven/InvenRouter';
 import { LolRouter } from './route/lol/LolRouter';
 import { MemoRouter } from './route/memo/MemoRouter';
@@ -275,6 +276,7 @@ export class ExpressServerManager implements IServerManager {
         app.use('/users', new UsersRouter().getRouter());
         app.use('/lol', new LolRouter().getRouter());
         app.use('/photo', new PhotoRouter().getRouter());
+        app.use('/emoji', new EmojiRouter().getRouter());
         app.use('/twitch', new TwitchRouter().getRouter());
 
         app.get('/lolgalls', (req, res) => {
