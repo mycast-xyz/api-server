@@ -17,10 +17,11 @@ export class YoutubeStagedStreamLoader implements StagedStreamLoader {
         return await this.loadWithHandle(handle);
     }
 
-    async loadWithHandle(handle: string): Promise<StagedStream | null> {
-        const { data } = await axios.get<string>(
-            `https://www.youtube.com/${handle}/featured`
-        );
+    async loadWithHandle(handleSrc: string): Promise<StagedStream | null> {
+        const handle = this.sliceHandle(handleSrc);
+        const encodedHandle = encodeURIComponent(handle);
+        const url = `https://www.youtube.com/@${encodedHandle}/featured`;
+        const { data } = await axios.get<string>(url);
         const $ = cheerio.load(data);
         const title = $('meta[property="og:title"]').attr('content');
         const thumbRegex = /\"thumbnailUrl\" .*?\"(.*?)\"/;
@@ -36,5 +37,9 @@ export class YoutubeStagedStreamLoader implements StagedStreamLoader {
         } else {
             return null;
         }
+    }
+
+    private sliceHandle(handleSrc: string) {
+        return handleSrc.startsWith('@') ? handleSrc.slice(1) : handleSrc;
     }
 }
