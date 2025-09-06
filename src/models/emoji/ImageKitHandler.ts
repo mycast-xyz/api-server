@@ -2,6 +2,8 @@ import Axios from 'axios';
 import { Config } from '../../Config';
 import { Logger } from '../../util/Logger';
 import ImageKit = require('imagekit');
+import { UploadResponse } from 'imagekit/dist/libs/interfaces';
+import IKResponse from 'imagekit/dist/libs/interfaces/IKResponse';
 
 export class ImageKitHandler {
     #imageKit = new ImageKit({
@@ -53,7 +55,6 @@ export class ImageKitHandler {
         base64: string,
         fileName?: string
     ): Promise<ImageKitUploadResponse | null> {
-        // 임시코드
         if (!this.#isImage(base64)) {
             this.#logger.e('uploadBase64: invalid base64');
             return null;
@@ -67,7 +68,6 @@ export class ImageKitHandler {
             : `image_${Date.now()}.${ext}`;
 
         const content = this.#getImageContent(base64);
-
         try {
             const response = await this.#imageKit.upload({
                 file: content,
@@ -132,14 +132,4 @@ type ImageKitResponse = ImageKitData;
 type ImageKitUploadResponse = {
     fileId: string;
     name: string;
-    size: number;
-    versionInfo: { id: string; name: string };
-    filePath: string;
-    url: string;
-    fileType: 'image';
-    height: number;
-    width: number;
-    thumbnailUrl: string;
-    AITags: null;
-    description: null;
 };
