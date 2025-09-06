@@ -30,15 +30,16 @@ export class EmojiRouter extends BaseRouter {
         this.#logger.v(
             `POST /emoji with pk: ${privKey}, name: ${name}, base64: ${base64Preview}...`
         );
-        new EmojiHandler().uploadEmoji(privKey, base64, name).then((result) => {
-            if (result) {
+        new EmojiHandler()
+            .uploadEmoji(privKey, base64, name)
+            .then((emojiDao) => {
+                if (!emojiDao) {
+                    res.sendStatus(500);
+                    return;
+                }
                 res.sendStatus(200);
-                res.json();
-            } else {
-                res.sendStatus(500);
-                return;
-            }
-        });
+                res.json(emojiDao);
+            });
     }
 
     async #onUserEmojis(req: Request, res: Response) {

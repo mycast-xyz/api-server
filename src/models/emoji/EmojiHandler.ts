@@ -17,7 +17,7 @@ export class EmojiHandler {
         privKey: string,
         base64: string,
         name: string
-    ): Promise<boolean> {
+    ): Promise<InsertEmojiDao | null> {
         const uploaderIdx = await this.#getUserIdxByPrivKey(privKey);
         this.#logger.v(`Uploading emoji for user ${uploaderIdx}: ${name}`);
         const imageKitData = await this.#imageKitHandler.uploadBase64(
@@ -29,10 +29,19 @@ export class EmojiHandler {
         );
         if (!imageKitData) {
             this.#logger.e('ImageKit upload failed');
-            return false;
+            return null;
         }
+
+        const emoji: InsertEmojiDao = {
+            type: 'imagekit',
+            name: name,
+            imageHash: imageKitData.fileId,
+            uploaderIdx: uploaderIdx,
+        };
+
+        const emojiId = await this.#insertEmoji(emoji);
         this.#logger.v(`Uploaded emoji for user ${uploaderIdx}: ${name}`);
-        return true;
+        return emojiId > 0 ? emoji : null;
     }
 
     /**
@@ -50,4 +59,27 @@ export class EmojiHandler {
         }
         return rows[0].idx;
     }
+
+    async #insertEmoji(emojiDao: InsertEmojiDao): Promise<number> {
+        const query =
+            'INSERT INTO emoji (type, name, image_hash, uploader_idx) VALUES (?, ?, ?, ?)';
+        const args = [
+            emojiDao.type,
+            emojiDao.name,
+            emojiDao.imageHash,
+            emojiDao.uploaderIdx,
+        ];
+        const result = await this.#dbModel.query(query, args);
+        if (!result || result.affectedRows < 1) {
+            throw new Error('not updated');
+        }
+        return result.insertId;
+    }
 }
+
+type InsertEmojiDao = {
+    type: string;
+    uploaderIdx: number;
+    imageHash: string;
+    name: string;
+};

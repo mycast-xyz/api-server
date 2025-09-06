@@ -49,7 +49,10 @@ export class ImageKitHandler {
     /**
      * 이미지 업로드 (base64)
      */
-    async uploadBase64(base64: string, fileName?: string): Promise<any | null> {
+    async uploadBase64(
+        base64: string,
+        fileName?: string
+    ): Promise<ImageKitUploadResponse | null> {
         // 임시코드
         if (!this.#isImage(base64)) {
             this.#logger.e('uploadBase64: invalid base64');
@@ -84,14 +87,12 @@ export class ImageKitHandler {
      */
     async getImage(fileId: string): Promise<ImageKitData | null> {
         const uri = `https://api.imagekit.io/v1/files/${fileId}`;
-        const opt = {
-            auth: {
-                username: Config.IMAGEKIT_PRIVATE_KEY,
-                password: '',
-            },
+        const auth = {
+            username: Config.IMAGEKIT_PRIVATE_KEY,
+            password: '',
         };
         try {
-            const res = await Axios.get<ImageKitData>(uri, opt);
+            const res = await Axios.get<ImageKitData>(uri, { auth });
             if (res.status !== 200 || !res.data) {
                 return null;
             }
@@ -127,3 +128,18 @@ export type ImageKitData = {
 };
 
 type ImageKitResponse = ImageKitData;
+
+type ImageKitUploadResponse = {
+    fileId: string;
+    name: string;
+    size: number;
+    versionInfo: { id: string; name: string };
+    filePath: string;
+    url: string;
+    fileType: 'image';
+    height: number;
+    width: number;
+    thumbnailUrl: string;
+    AITags: null;
+    description: null;
+};
