@@ -4,32 +4,32 @@ import { Logger } from '../../../util/Logger';
 import { BaseAsyncLoader } from '../common/BaseAsyncLoader';
 
 export class LolInvenNewsLoader extends BaseAsyncLoader<null, any[]> {
-    private mLogger: Logger;
+    #logger: Logger;
 
-    public constructor() {
+    constructor() {
         super();
-        this.mLogger = new Logger('LolInvenNewLoader');
+        this.#logger = new Logger('LolInvenNewLoader');
     }
 
-    public async getResult(input: null): Promise<any[] | null> {
+    async getResult(input: null): Promise<any[] | null> {
         const url = 'http://m.inven.co.kr/webzine/wznews.php?site=lol';
         try {
             const { status, data } = await Axios.get(url);
             if (status !== 200) {
-                this.mLogger.e('getResult: network error');
+                this.#logger.e('getResult: network error');
                 return [];
             }
             const $ = cheerio.load(data);
             const $article = $('.articleSubject') || [];
-            const results = $article.toArray().map((e) => this.parse($(e)));
+            const results = $article.toArray().map((e) => this.#parse($(e)));
             return results;
         } catch (e) {
-            this.mLogger.e('getResult');
+            this.#logger.e('getResult');
             return [];
         }
     }
 
-    private parse($element: cheerio.Cheerio) {
+    #parse($element: cheerio.Cheerio) {
         const $subject = $element.find('.subject');
         const $thumb = $element.find('span.thumb img');
         const $title = $element.find('span.title');

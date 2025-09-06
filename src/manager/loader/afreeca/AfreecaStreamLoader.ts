@@ -6,7 +6,7 @@ export class AfreecaStreamLoader extends BaseAsyncLoader<
     string,
     AfreecaResult
 > {
-    public async getResult(id: string): Promise<AfreecaResult | null> {
+    async getResult(id: string): Promise<AfreecaResult | null> {
         try {
             const url = `http://sch.sooplive.co.kr/api.php?m=liveSearch&v=1.0&szOrder=score&c=EUC-KR&szKeyword=${id}`;
 
