@@ -1,9 +1,5 @@
 import { Config } from './Config';
-import { GfDollCacheLoader } from './manager/GfDollCacheLoader';
 import { AfreecaStreamLoader } from './manager/loader/afreeca/AfreecaStreamLoader';
-import { AzurLaneCacheLoader } from './manager/loader/AzurLaneCacheLoader';
-import { CqWarriorCacheLoader } from './manager/loader/CqWarriorCacheLoader';
-import { HosHeroCacheLoader } from './manager/loader/HosHeroCacheLoader';
 import { KakaoBookLoader } from './manager/loader/KakaoBookLoader';
 import { NaverMovieLoader } from './manager/loader/NaverMovieLoader';
 import { OnnadaAnimationLoader } from './manager/loader/onnada/OnnadaAnimationLoader';
@@ -19,10 +15,6 @@ export class App {
         const SERVER_PORT2 = 9011;
 
         const animationLoader = new OnnadaAnimationLoader();
-        const alShipLoader = AzurLaneCacheLoader.getInstance();
-        const cqWarriorLoader = CqWarriorCacheLoader.getInstance();
-        const gfDollCacheLoader = GfDollCacheLoader.getInstance();
-        const hosHeroLoader = HosHeroCacheLoader.getInstance();
         const bookLoader = new KakaoBookLoader();
         const movieLoader = new NaverMovieLoader();
         const afreecaLoader = new AfreecaStreamLoader();
@@ -34,11 +26,7 @@ export class App {
         serverManager.setIndexUri(`${Config.ROOT_DIR}/resource/index.html`);
         serverManager.setRiotApiCode(Config.RIOT_API_CODE);
         serverManager.setAnimationLoader(animationLoader);
-        serverManager.setAlShipLoader(alShipLoader);
         serverManager.setBookLoader(bookLoader);
-        serverManager.setCqWarriorLoader(cqWarriorLoader);
-        serverManager.setGfDollLoader(gfDollCacheLoader);
-        serverManager.setHosHeroLoader(hosHeroLoader);
         serverManager.setMovieLoader(movieLoader);
         serverManager.setAfreecaLoader(afreecaLoader);
         serverManager.start(`Api Server Started.. @${SERVER_PORT}`);
