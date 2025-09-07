@@ -66,8 +66,8 @@ export class EmojiDbManager {
             'reg_date as regDate',
             'type',
             'name',
-            'image_hash',
-            'uploader_idx',
+            'image_hash as imageHash',
+            'uploader_idx as uploaderIdx',
         ];
     }
 }

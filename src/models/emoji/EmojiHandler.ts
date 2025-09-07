@@ -52,6 +52,11 @@ export class EmojiHandler {
         return await this.#db.getEmojisByUser(userIdx);
     }
 
+    async getUserEmojisByPrivKey(privKey: string) {
+        const userIdx = await this.#getUserIdxByPrivKey(privKey);
+        return await this.#db.getEmojisByUser(userIdx);
+    }
+
     async #getUserIdxByPrivKey(privKey: string): Promise<number> {
         const query = `SELECT idx FROM user WHERE private_key = ?`;
         const rows: any[] = await this.#dbModel.query(query, [privKey]);

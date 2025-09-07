@@ -6,6 +6,7 @@ import { BaseRouter } from '../BaseRouter';
 
 export class EmojiRouter extends BaseRouter {
     #logger = new Logger('EmojiRouter');
+    #handler = new EmojiHandler();
     #db: EmojiDbManager = new EmojiDbManager();
 
     constructor() {
@@ -42,9 +43,9 @@ export class EmojiRouter extends BaseRouter {
     }
 
     async #onUserEmojis(req: Request, res: Response) {
-        const userKey = req.params.userKey;
+        const userKey = req.params.userKey as string;
         try {
-            const emojis = await this.#db.getEmojis(userKey, 0, 100);
+            const emojis = await this.#handler.getUserEmojisByPrivKey(userKey);
             res.json(emojis);
         } catch (e) {
             res.status(500).json([]);
