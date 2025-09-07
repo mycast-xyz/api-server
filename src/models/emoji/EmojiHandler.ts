@@ -10,11 +10,25 @@ export class EmojiHandler {
     #dbModel: DatabaseModel = new VegaDbModel();
     #imageKitHandler: ImageKitHandler = new ImageKitHandler();
 
+    readonly REASON_DUPLICATED = 'duplicated';
+    readonly REASON_UPLOAD_FAILED = 'upload_failed';
+    readonly REASON_DB_ERROR = 'db_error';
+
     async uploadEmoji(
         privKey: string,
         base64: string,
         name: string
-    ): Promise<InsertEmojiDao | null> {
+    ): Promise<UploadResult> {
+        const isDuplicated = await this.#db.isNameDuplicated(name);
+        if (isDuplicated) {
+            this.#logger.e(`Emoji name duplicated: ${name}`);
+            return {
+                result: false,
+                reason: this.REASON_DUPLICATED,
+                msg: '이모지 이름이 중복됩니다.',
+            };
+        }
+
         const uploaderIdx = await this.#getUserIdxByPrivKey(privKey);
         this.#logger.v(`Uploading emoji for user ${uploaderIdx}: ${name}`);
         const imageKitData = await this.#imageKitHandler.uploadBase64(
@@ -26,7 +40,11 @@ export class EmojiHandler {
         );
         if (!imageKitData) {
             this.#logger.e('ImageKit upload failed');
-            return null;
+            return {
+                result: false,
+                reason: this.REASON_UPLOAD_FAILED,
+                msg: '업로드에 실패했습니다.',
+            };
         }
 
         const emoji: InsertEmojiDao = {
@@ -39,7 +57,15 @@ export class EmojiHandler {
 
         const emojiId = await this.#insertEmoji(emoji);
         this.#logger.v(`Uploaded emoji for user ${uploaderIdx}: ${name}`);
-        return emojiId > 0 ? emoji : null;
+        if (emojiId > 0) {
+            return { result: true, emoji };
+        } else {
+            return {
+                result: false,
+                reason: this.REASON_DB_ERROR,
+                msg: '데이터베이스 오류',
+            };
+        }
     }
 
     async removeEmoji(emojiIdx: number, privateKey: string) {
@@ -82,6 +108,19 @@ export class EmojiHandler {
         return result.insertId;
     }
 }
+
+export type UploadResult = UploadSuccessResult | UploadFailResult;
+
+type UploadSuccessResult = {
+    result: true;
+    emoji: InsertEmojiDao;
+};
+
+type UploadFailResult = {
+    result: false;
+    reason: string;
+    msg: string;
+};
 
 type InsertEmojiDao = {
     type: string;

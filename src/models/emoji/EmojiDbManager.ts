@@ -73,6 +73,19 @@ export class EmojiDbManager {
         }
     }
 
+    async isNameDuplicated(name: string): Promise<boolean> {
+        const where = 'WHERE name = ?';
+        const query = `SELECT COUNT(*) as cnt FROM emoji ${where}`;
+        const args = [name];
+        try {
+            const rows = await this.#db.query(query, args);
+            return rows[0]?.cnt > 0;
+        } catch (e) {
+            this.#logger.e('duplicate check error', e);
+            return false;
+        }
+    }
+
     #getColumns(): string[] {
         return [
             'idx',
