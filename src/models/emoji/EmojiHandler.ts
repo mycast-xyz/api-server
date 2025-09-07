@@ -36,6 +36,7 @@ export class EmojiHandler {
             type: 'imagekit',
             name: name,
             imageHash: imageKitData.fileId,
+            thumbnailUrl: imageKitData.thumbnailUrl,
             uploaderIdx: uploaderIdx,
         };
 
@@ -62,11 +63,12 @@ export class EmojiHandler {
 
     async #insertEmoji(emojiDao: InsertEmojiDao): Promise<number> {
         const query =
-            'INSERT INTO emoji (type, name, image_hash, uploader_idx) VALUES (?, ?, ?, ?)';
+            'INSERT INTO emoji (type, name, image_hash, thumbnail_url, uploader_idx) VALUES (?, ?, ?, ?)';
         const args = [
             emojiDao.type,
             emojiDao.name,
             emojiDao.imageHash,
+            emojiDao.thumbnailUrl,
             emojiDao.uploaderIdx,
         ];
         const result = await this.#dbModel.query(query, args);
@@ -79,7 +81,8 @@ export class EmojiHandler {
 
 type InsertEmojiDao = {
     type: string;
-    uploaderIdx: number;
-    imageHash: string;
     name: string;
+    imageHash: string;
+    thumbnailUrl: string;
+    uploaderIdx: number;
 };

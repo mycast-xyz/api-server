@@ -2,8 +2,6 @@ import Axios from 'axios';
 import { Config } from '../../Config';
 import { Logger } from '../../util/Logger';
 import ImageKit = require('imagekit');
-import { UploadResponse } from 'imagekit/dist/libs/interfaces';
-import IKResponse from 'imagekit/dist/libs/interfaces/IKResponse';
 
 export class ImageKitHandler {
     #imageKit = new ImageKit({
@@ -132,4 +130,5 @@ type ImageKitResponse = ImageKitData;
 type ImageKitUploadResponse = {
     fileId: string;
     name: string;
+    thumbnailUrl: string;
 };
