@@ -102,6 +102,14 @@ export class ImageKitHandler {
         }
     }
 
+    getResizedUrl(url: string, size: number): string {
+        const u = new URL(url);
+        const params = u.searchParams;
+        params.append('tr', `w-${size},h-${size}`);
+        u.search = params.toString();
+        return u.toString();
+    }
+
     #isImage(base64: string): boolean {
         return /data:(image\/.*?);base64,(.*)/.test(base64);
     }

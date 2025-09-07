@@ -8,7 +8,7 @@ export class EmojiHandler {
     #logger = new Logger('EmojiHandler');
     #db: EmojiDbManager = new EmojiDbManager();
     #dbModel: DatabaseModel = new VegaDbModel();
-    #imageKitHandler: ImageKitHandler = new ImageKitHandler();
+    #imageKit: ImageKitHandler = new ImageKitHandler();
 
     readonly REASON_DUPLICATED = 'duplicated';
     readonly REASON_UPLOAD_FAILED = 'upload_failed';
@@ -31,10 +31,7 @@ export class EmojiHandler {
 
         const uploaderIdx = await this.#getUserIdxByPrivKey(privKey);
         this.#logger.v(`Uploading emoji for user ${uploaderIdx}: ${name}`);
-        const imageKitData = await this.#imageKitHandler.uploadBase64(
-            base64,
-            name
-        );
+        const imageKitData = await this.#imageKit.uploadBase64(base64, name);
         this.#logger.v(
             `ImageKit upload result: ${JSON.stringify(imageKitData)}`
         );
@@ -75,7 +72,7 @@ export class EmojiHandler {
         }
         switch (emoji.type) {
             case 'imagekit': {
-                const imageKitData = await this.#imageKitHandler.getImage(
+                const imageKitData = await this.#imageKit.getImage(
                     emoji.imageHash
                 );
                 if (!imageKitData || !imageKitData.url) {
@@ -84,10 +81,14 @@ export class EmojiHandler {
                     );
                     return null;
                 }
+                const resized = this.#imageKit.getResizedUrl(
+                    imageKitData.url,
+                    64
+                );
                 return {
                     type: 'image',
                     name: emoji.name,
-                    src: `${imageKitData.url}?tr=w-64,h-64`,
+                    src: resized,
                 };
             }
             default:
