@@ -11,13 +11,17 @@ export class EmojiRouter extends BaseRouter {
 
     constructor() {
         super();
-
-        this.getRouter().get('/', this.#getEmojis.bind(this));
+        this.getRouter().get('/', (req, res) => this.onGet(req, res));
         this.getRouter().get('/:userKey/emojis', (req, res) =>
             this.#onUserEmojis(req, res)
         );
         this.getRouter().get('/type/:type', this.#getEmojisByType.bind(this));
         this.getRouter().post('/', (req, res) => this.onPost(req, res));
+    }
+
+    onGet(req: Request, res: Response) {
+        this.#logger.v('GET /emoji');
+        res.send('Emoji route is working!');
     }
 
     onPost(req: Request, res: Response) {
@@ -46,18 +50,6 @@ export class EmojiRouter extends BaseRouter {
         const userKey = req.params.userKey as string;
         try {
             const emojis = await this.#handler.getUserEmojisByPrivKey(userKey);
-            res.json(emojis);
-        } catch (e) {
-            res.status(500).json([]);
-        }
-    }
-
-    async #getEmojis(req: Request, res: Response) {
-        const search = req.query.search?.toString() || '';
-        const start = parseInt(req.query.start as string) || 0;
-        const size = parseInt(req.query.size as string) || 20;
-        try {
-            const emojis = await this.#db.getEmojis(search, start, size);
             res.json(emojis);
         } catch (e) {
             res.status(500).json([]);

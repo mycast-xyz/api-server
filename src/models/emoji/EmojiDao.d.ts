@@ -3,6 +3,7 @@ export type EmojiDao = {
     regDate: Date;
     type: string;
     name: string;
-    image_hash: string;
-    uploader_idx: number;
+    imageHash: string;
+    thumbnailUrl: string;
+    uploaderIdx: number;
 };
