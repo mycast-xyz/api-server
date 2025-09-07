@@ -47,6 +47,7 @@ export class EmojiRouter extends BaseRouter {
     }
 
     async #onUserEmojis(req: Request, res: Response) {
+        this.#logger.v('GET /emoji/:userKey/emojis');
         const userKey = req.params.userKey as string;
         try {
             const emojis = await this.#handler.getUserEmojisByPrivKey(userKey);

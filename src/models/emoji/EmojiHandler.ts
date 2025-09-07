@@ -67,8 +67,8 @@ export class EmojiHandler {
     }
 
     async #insertEmoji(emojiDao: InsertEmojiDao): Promise<number> {
-        const query =
-            'INSERT INTO emoji (type, name, image_hash, thumbnail_url, uploader_idx) VALUES (?, ?, ?, ?, ?)';
+        const table = 'emoji';
+        const query = `INSERT INTO ${table} (type, name, image_hash, thumbnail_url, uploader_idx) VALUES (?, ?, ?, ?, ?)`;
         const args = [
             emojiDao.type,
             emojiDao.name,

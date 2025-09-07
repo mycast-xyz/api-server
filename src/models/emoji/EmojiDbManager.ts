@@ -67,6 +67,7 @@ export class EmojiDbManager {
             'type',
             'name',
             'image_hash as imageHash',
+            'thumbnail_url as thumbnailUrl',
             'uploader_idx as uploaderIdx',
         ];
     }
