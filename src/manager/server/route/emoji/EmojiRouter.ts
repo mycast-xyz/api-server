@@ -42,9 +42,10 @@ export class EmojiRouter extends BaseRouter {
                     res.status(404).json({ error: 'Emoji not found' });
                     return;
                 }
-                const emoji = await this.#db.findEmojiByName(name);
+                const emoji = await this.#handler.getEmojiByName(name);
                 if (!emoji) {
-                    res.status(404).json({ error: 'Emoji not found' });
+                    res.status(500).json({ error: 'Failed to get emoji info' });
+                    return;
                 }
                 res.json(emoji);
             })
