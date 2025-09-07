@@ -80,21 +80,22 @@ export class ImageKitHandler {
         }
     }
 
-    /**
-     * 이미지 정보 조회
-     */
     async getImage(fileId: string): Promise<ImageKitData | null> {
-        const uri = `https://api.imagekit.io/v1/files/${fileId}`;
-        const auth = {
-            username: Config.IMAGEKIT_PRIVATE_KEY,
-            password: '',
-        };
         try {
-            const res = await Axios.get<ImageKitData>(uri, { auth });
-            if (res.status !== 200 || !res.data) {
-                return null;
-            }
-            return res.data;
+            const res = await this.#imageKit.getFileDetails(fileId);
+            return {
+                fileId: res.fileId,
+                name: res.name,
+                url: res.url,
+                thumbnail: res.thumbnail,
+                height: res.height,
+                width: res.width,
+                size: res.size,
+                filePath: res.filePath,
+                fileType: res.fileType,
+                mime: res.mime,
+                hasAlpha: res.hasAlpha,
+            };
         } catch (e) {
             this.#logger.e('getImage error', e);
             return null;
@@ -114,15 +115,14 @@ export type ImageKitData = {
     fileId: string;
     name: string;
     url: string;
-    thumbnailUrl: string;
+    thumbnail: string;
     height: number;
     width: number;
     size: number;
     filePath: string;
     fileType: string;
-    mime: string;
+    mime?: string;
     hasAlpha: boolean;
-    // 기타 필요한 필드 추가
 };
 
 type ImageKitResponse = ImageKitData;
