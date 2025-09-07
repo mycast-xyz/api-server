@@ -19,7 +19,7 @@ export class EmojiHandler {
         base64: string,
         name: string
     ): Promise<UploadResult> {
-        const isDuplicated = await this.#db.isNameDuplicated(name);
+        const isDuplicated = await this.#db.isNameExist(name);
         if (isDuplicated) {
             this.#logger.e(`Emoji name duplicated: ${name}`);
             return {
@@ -65,6 +65,34 @@ export class EmojiHandler {
                 reason: this.REASON_DB_ERROR,
                 msg: '데이터베이스 오류',
             };
+        }
+    }
+
+    async getEmojiByName(name: string): Promise<EmojiInfo | null> {
+        const emoji = await this.#db.findEmojiByName(name);
+        if (!emoji) {
+            return null;
+        }
+        switch (emoji.type) {
+            case 'imagekit': {
+                const imageKitData = await this.#imageKitHandler.getImage(
+                    emoji.imageHash
+                );
+                if (!imageKitData || !imageKitData.url) {
+                    this.#logger.e(
+                        `ImageKit image not found: ${emoji.imageHash}`
+                    );
+                    return null;
+                }
+                return {
+                    type: 'image',
+                    name: emoji.name,
+                    src: `${imageKitData.url}?tr=w-64,h-64`,
+                };
+            }
+            default:
+                this.#logger.e(`Unknown emoji type: ${emoji.type}`);
+                return null;
         }
     }
 
@@ -129,3 +157,5 @@ type InsertEmojiDao = {
     thumbnailUrl: string;
     uploaderIdx: number;
 };
+
+type EmojiInfo = { name: string; type: 'image'; src: string };

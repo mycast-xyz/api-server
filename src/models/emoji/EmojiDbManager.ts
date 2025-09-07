@@ -7,28 +7,17 @@ export class EmojiDbManager {
     #logger: Logger = new Logger('EmojiDbManager');
     #db: DatabaseModel = new VegaDbModel();
 
-    async getEmojis(
-        search: string,
-        start: number,
-        size: number
-    ): Promise<EmojiDao[]> {
+    async findEmojiByName(name: string): Promise<EmojiDao | null> {
         const cols = this.#getColumns();
         const colString = cols.join(',');
-        const order = 'ORDER BY idx DESC';
-        const limit = 'LIMIT ?, ?';
-        const where = 'WHERE name LIKE ?';
-        const query =
-            search.length > 0
-                ? `SELECT ${colString} FROM emoji ${where} ${order} ${limit}`
-                : `SELECT ${colString} FROM emoji ${order} ${limit}`;
-        const args =
-            search.length > 0 ? [`%${search}%`, start, size] : [start, size];
+        const where = 'WHERE name = ?';
+        const query = `SELECT ${colString} FROM emoji ${where}`;
         try {
-            const rows = (await this.#db.query(query, args)) as EmojiDao[];
-            return rows;
+            const rows = (await this.#db.query(query, [name])) as EmojiDao[];
+            return rows?.[0];
         } catch (e) {
             this.#logger.e('load error', e);
-            return [];
+            return null;
         }
     }
 
@@ -73,7 +62,7 @@ export class EmojiDbManager {
         }
     }
 
-    async isNameDuplicated(name: string): Promise<boolean> {
+    async isNameExist(name: string): Promise<boolean> {
         const where = 'WHERE name = ?';
         const query = `SELECT COUNT(*) as cnt FROM emoji ${where}`;
         const args = [name];

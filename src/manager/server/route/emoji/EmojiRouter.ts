@@ -12,6 +12,7 @@ export class EmojiRouter extends BaseRouter {
     constructor() {
         super();
         this.getRouter().get('/', (req, res) => this.onGet(req, res));
+        this.getRouter().get('/info', (req, res) => this.onGetInfo(req, res));
         this.getRouter().get('/:userKey/emojis', (req, res) =>
             this.#onUserEmojis(req, res)
         );
@@ -25,6 +26,32 @@ export class EmojiRouter extends BaseRouter {
     onGet(req: Request, res: Response) {
         this.#logger.v('GET /emoji');
         res.send('Emoji route is working!');
+    }
+
+    onGetInfo(req: Request, res: Response) {
+        this.#logger.v('GET /emoji/info');
+        const name = req.query.name as string;
+        if (!name) {
+            res.status(400).json({ error: 'name query required' });
+            return;
+        }
+        this.#db
+            .isNameExist(name)
+            .then(async (exist) => {
+                if (!exist) {
+                    res.status(404).json({ error: 'Emoji not found' });
+                    return;
+                }
+                const emoji = await this.#db.findEmojiByName(name);
+                if (!emoji) {
+                    res.status(404).json({ error: 'Emoji not found' });
+                }
+                res.json(emoji);
+            })
+            .catch((e) => {
+                this.#logger.e('onGetInfo error', e);
+                res.status(500).json({ error: 'Internal server error' });
+            });
     }
 
     onPost(req: Request, res: Response) {
