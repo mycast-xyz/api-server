@@ -7,12 +7,12 @@ export class EmojiDbManager {
     #logger: Logger = new Logger('EmojiDbManager');
     #db: DatabaseModel = new VegaDbModel();
 
-    public async getEmojis(
+    async getEmojis(
         search: string,
         start: number,
         size: number
     ): Promise<EmojiDao[]> {
-        const cols = this.getColumns();
+        const cols = this.#getColumns();
         const colString = cols.join(',');
         const order = 'ORDER BY idx DESC';
         const limit = 'LIMIT ?, ?';
@@ -32,8 +32,8 @@ export class EmojiDbManager {
         }
     }
 
-    public async getEmojisByType(type: string): Promise<EmojiDao[]> {
-        const column = this.getColumns().join(',');
+    async getEmojisByType(type: string): Promise<EmojiDao[]> {
+        const column = this.#getColumns().join(',');
         const where = `WHERE type = ?`;
         const query = `SELECT ${column} FROM emoji ${where}`;
         const args = [type];
@@ -45,8 +45,8 @@ export class EmojiDbManager {
         }
     }
 
-    public async getEmojisByUser(userIdx: number): Promise<EmojiDao[]> {
-        const column = this.getColumns().join(',');
+    async getEmojisByUser(userIdx: number): Promise<EmojiDao[]> {
+        const column = this.#getColumns().join(',');
         const where = 'WHERE uploader_idx = ?';
         const order = 'ORDER BY idx DESC';
         const query = `SELECT ${column} FROM emoji ${where} ${order}`;
@@ -60,7 +60,7 @@ export class EmojiDbManager {
         }
     }
 
-    private getColumns(): string[] {
+    #getColumns(): string[] {
         return [
             'idx',
             'reg_date as regDate',

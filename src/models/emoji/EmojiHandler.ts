@@ -13,7 +13,7 @@ export class EmojiHandler {
     /**
      * 예시: 새로운 이모지 저장 (구현 필요)
      */
-    public async uploadEmoji(
+    async uploadEmoji(
         privKey: string,
         base64: string,
         name: string
@@ -48,7 +48,7 @@ export class EmojiHandler {
     /**
      * 예시: 특정 유저의 이모지 모두 가져오기
      */
-    public async getUserEmojis(userIdx: number) {
+    async getUserEmojis(userIdx: number) {
         return await this.#db.getEmojisByUser(userIdx);
     }
 
