@@ -37,8 +37,7 @@ export class EmojiRouter extends BaseRouter {
                     res.sendStatus(500);
                     return;
                 }
-                res.sendStatus(200);
-                res.json(emojiDao);
+                res.status(200).json(emojiDao);
             });
     }
 
