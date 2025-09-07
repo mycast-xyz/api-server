@@ -15,6 +15,9 @@ export class EmojiRouter extends BaseRouter {
         this.getRouter().get('/:userKey/emojis', (req, res) =>
             this.#onUserEmojis(req, res)
         );
+        this.getRouter().delete('/:userKey/emoji/:emojiIdx', (req, res) =>
+            this.#onDeleteEmoji(req, res)
+        );
         this.getRouter().get('/type/:type', this.#getEmojisByType.bind(this));
         this.getRouter().post('/', (req, res) => this.onPost(req, res));
     }
@@ -44,6 +47,26 @@ export class EmojiRouter extends BaseRouter {
                 }
                 res.status(200).json(emojiDao);
             });
+    }
+
+    #onDeleteEmoji(req: Request, res: Response) {
+        const userKey = req.params.userKey as string;
+        const emojiIdx = parseInt(req.params.emojiIdx as string);
+        if (isNaN(emojiIdx)) {
+            this.#logger.e(`Invalid emojiIdx: ${req.params.emojiIdx}`);
+            res.sendStatus(400);
+            return;
+        }
+        const result = this.#handler.removeEmoji(emojiIdx, userKey);
+        if (!result) {
+            this.#logger.e(
+                `Failed to delete emojiIdx: ${emojiIdx} for userKey: ${userKey}`
+            );
+            res.sendStatus(500);
+            return;
+        }
+        this.#logger.v(`Deleted emojiIdx: ${emojiIdx} for userKey: ${userKey}`);
+        res.sendStatus(200);
     }
 
     async #onUserEmojis(req: Request, res: Response) {

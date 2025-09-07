@@ -10,9 +10,6 @@ export class EmojiHandler {
     #dbModel: DatabaseModel = new VegaDbModel();
     #imageKitHandler: ImageKitHandler = new ImageKitHandler();
 
-    /**
-     * 예시: 새로운 이모지 저장 (구현 필요)
-     */
     async uploadEmoji(
         privKey: string,
         base64: string,
@@ -45,9 +42,11 @@ export class EmojiHandler {
         return emojiId > 0 ? emoji : null;
     }
 
-    /**
-     * 예시: 특정 유저의 이모지 모두 가져오기
-     */
+    async removeEmoji(emojiIdx: number, privateKey: string) {
+        const requesterIdx = await this.#getUserIdxByPrivKey(privateKey);
+        return await this.#db.removeEmoji(emojiIdx, requesterIdx);
+    }
+
     async getUserEmojis(userIdx: number) {
         return await this.#db.getEmojisByUser(userIdx);
     }

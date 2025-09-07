@@ -45,6 +45,19 @@ export class EmojiDbManager {
         }
     }
 
+    async removeEmoji(idx: number, requesterIdx: number): Promise<boolean> {
+        const where = 'WHERE idx = ? AND uploader_idx = ?';
+        const query = `DELETE FROM emoji ${where}`;
+        const args = [idx, requesterIdx];
+        try {
+            const result = await this.#db.query(query, args);
+            return result.affectedRows > 0;
+        } catch (e) {
+            this.#logger.e('delete error', e);
+            return false;
+        }
+    }
+
     async getEmojisByUser(userIdx: number): Promise<EmojiDao[]> {
         const column = this.#getColumns().join(',');
         const where = 'WHERE uploader_idx = ?';
