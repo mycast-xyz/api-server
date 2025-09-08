@@ -86,4 +86,50 @@ export class EmojiDbManager {
             'uploader_idx as uploaderIdx',
         ];
     }
+
+    async getAllEmojis(): Promise<EmojiDao[]> {
+        const column = this.#getColumns().join(',');
+        const order = 'ORDER BY reg_date DESC';
+        const query = `SELECT ${column} FROM emoji ${order}`;
+        try {
+            const rows = (await this.#db.query(query)) as EmojiDao[];
+            return rows;
+        } catch (e) {
+            this.#logger.e('load all emojis error', e);
+            return [];
+        }
+    }
+
+    async getAllEmojisWithUploader(): Promise<EmojiWithUploaderDao[]> {
+        const columns = [
+            'e.idx',
+            'e.reg_date as regDate',
+            'e.type',
+            'e.name',
+            'e.image_hash as imageHash',
+            'e.thumbnail_url as thumbnailUrl',
+            'u.nickname as uploaderNickname',
+            'u.icon as uploaderIcon',
+        ];
+        const query = `
+            SELECT ${columns.join(', ')}
+            FROM emoji e
+            JOIN user u ON e.uploader_idx = u.idx
+            ORDER BY e.reg_date DESC
+        `;
+        try {
+            const rows = (await this.#db.query(
+                query
+            )) as EmojiWithUploaderDao[];
+            return rows;
+        } catch (e) {
+            this.#logger.e('load all emojis with uploader error', e);
+            return [];
+        }
+    }
 }
+
+export type EmojiWithUploaderDao = EmojiDao & {
+    uploaderNickname: string;
+    uploaderIcon: string;
+};

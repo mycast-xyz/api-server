@@ -1,4 +1,4 @@
-import { Request, Response, Router } from 'express';
+import { Request, Response } from 'express';
 import { EmojiDbManager } from '../../../../models/emoji/EmojiDbManager';
 import { EmojiHandler } from '../../../../models/emoji/EmojiHandler';
 import { Logger } from '../../../../util/Logger';
@@ -23,9 +23,25 @@ export class EmojiRouter extends BaseRouter {
         this.getRouter().post('/', (req, res) => this.onPost(req, res));
     }
 
-    onGet(req: Request, res: Response) {
+    async onGet(req: Request, res: Response) {
         this.#logger.v('GET /emoji');
-        res.send('Emoji route is working!');
+        try {
+            const emojis = await this.#db.getAllEmojisWithUploader();
+            const emojiDtos: EmojiDto[] = emojis.map((emoji) => ({
+                regDate: emoji.regDate,
+                type: emoji.type,
+                name: emoji.name,
+                imageHash: emoji.imageHash,
+                thumbnailUrl: emoji.thumbnailUrl,
+                uploader: {
+                    nickname: emoji.uploaderNickname,
+                    icon: emoji.uploaderIcon,
+                },
+            }));
+            res.json(emojiDtos);
+        } catch (e) {
+            res.status(500).json({ error: 'Failed to fetch emojis' });
+        }
     }
 
     async onGetInfo(req: Request, res: Response) {
@@ -106,3 +122,15 @@ export class EmojiRouter extends BaseRouter {
         }
     }
 }
+
+type EmojiDto = {
+    regDate: Date;
+    type: string;
+    name: string;
+    imageHash: string;
+    thumbnailUrl: string;
+    uploader: {
+        nickname: string;
+        icon: string;
+    };
+};

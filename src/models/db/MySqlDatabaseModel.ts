@@ -4,12 +4,12 @@ import { Logger } from '../../util/Logger';
 import { DatabaseModel } from './DatabaseModel';
 
 export class MySqlDatabaseModel implements DatabaseModel {
-    private mLogger: Logger;
-    private mPool: MySql.Pool;
+    #logger: Logger;
+    #pool: MySql.Pool;
 
-    public constructor(param: MySqlDatabaseManagerParam) {
-        this.mLogger = new Logger('MySqlDatabaseModel');
-        this.mPool = MySql.createPool({
+    constructor(param: MySqlDatabaseManagerParam) {
+        this.#logger = new Logger('MySqlDatabaseModel');
+        this.#pool = MySql.createPool({
             database: param.database,
             host: param.host,
             password: param.password,
@@ -17,9 +17,9 @@ export class MySqlDatabaseModel implements DatabaseModel {
         });
     }
 
-    public async query(query: string, args: any): Promise<any | null> {
+    async query(query: string, args?: any): Promise<any | null> {
         try {
-            const connection = await this.mPool.getConnection();
+            const connection = await this.#pool.getConnection();
             const [rows] = await connection.query<MySql.RowDataPacket[]>(
                 query,
                 args
@@ -30,8 +30,8 @@ export class MySqlDatabaseModel implements DatabaseModel {
             } else {
                 return rows;
             }
-        } catch {
-            this.mLogger.e('query: db error');
+        } catch (e) {
+            this.#logger.e('query: db error', e);
             return null;
         }
     }
