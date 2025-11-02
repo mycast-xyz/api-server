@@ -25,6 +25,7 @@ import { StreamRouter } from './route/stream/StreamRouter';
 import { TwitchRouter } from './route/twitch/TwitchRouter';
 import { UserRouter } from './route/user/UserRouter';
 import { UsersRouter } from './route/users/UsersRouter';
+import { ChzzkRouter } from './route/chzzk/ChzzkRouter';
 
 export class ExpressServerManager implements IServerManager {
     private static ERROR_MSG = 'ERROR';
@@ -198,6 +199,7 @@ export class ExpressServerManager implements IServerManager {
         app.use('/photo', new PhotoRouter().getRouter());
         app.use('/emoji', new EmojiRouter().getRouter());
         app.use('/twitch', new TwitchRouter().getRouter());
+        app.use('/chzzk', new ChzzkRouter().getRouter());
 
         app.get('/lolgalls', (req, res) => {
             this.mLolGallLoader.load(null, (galls) => {
