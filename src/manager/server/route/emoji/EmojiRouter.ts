@@ -14,12 +14,13 @@ export class EmojiRouter extends BaseRouter {
         this.getRouter().get('/', (req, res) => this.onGet(req, res));
         this.getRouter().get('/info', (req, res) => this.onGetInfo(req, res));
         this.getRouter().get('/:userKey/emojis', (req, res) =>
-            this.#onUserEmojis(req, res)
+            this.#onUserEmojis(req, res),
         );
         this.getRouter().delete('/:userKey/emoji/:emojiIdx', (req, res) =>
-            this.#onDeleteEmoji(req, res)
+            this.#onDeleteEmoji(req, res),
         );
         this.getRouter().get('/type/:type', this.#getEmojisByType.bind(this));
+        this.getRouter().get('/search', (req, res) => this.onSearch(req, res));
         this.getRouter().post('/', (req, res) => this.onPost(req, res));
     }
 
@@ -59,6 +60,37 @@ export class EmojiRouter extends BaseRouter {
         res.json(emoji);
     }
 
+    async onSearch(req: Request, res: Response) {
+        const query = req.query.q as string;
+        this.#logger.v(`GET /emoji/search?q=${query}`);
+
+        if (!query) {
+            res.status(400).json({ error: 'search query (q) is required' });
+            return;
+        }
+
+        try {
+            const emojis = await this.#db.searchEmojisWithUploader(query);
+            const emojiDtos: EmojiDto[] = emojis.map((emoji) => ({
+                regDate: emoji.regDate,
+                type: emoji.type,
+                name: emoji.name,
+                imageHash: emoji.imageHash,
+                thumbnailUrl: emoji.thumbnailUrl,
+                uploader: {
+                    nickname: emoji.uploaderNickname,
+                    icon: emoji.uploaderIcon,
+                },
+            }));
+            res.json(emojiDtos);
+        } catch (e) {
+            this.#logger.e('Search failed', e);
+            res.status(500).json({
+                error: 'Internal server error during search',
+            });
+        }
+    }
+
     onPost(req: Request, res: Response) {
         const { privKey, base64, name } = req.body;
         if (!base64 || typeof base64 !== 'string') {
@@ -68,7 +100,7 @@ export class EmojiRouter extends BaseRouter {
         }
         const base64Preview = base64.substring(0, 20);
         this.#logger.v(
-            `POST /emoji with pk: ${privKey}, name: ${name}, base64: ${base64Preview}...`
+            `POST /emoji with pk: ${privKey}, name: ${name}, base64: ${base64Preview}...`,
         );
         new EmojiHandler()
             .uploadEmoji(privKey, base64, name)
@@ -92,7 +124,7 @@ export class EmojiRouter extends BaseRouter {
         const result = this.#handler.removeEmoji(emojiIdx, userKey);
         if (!result) {
             this.#logger.e(
-                `Failed to delete emojiIdx: ${emojiIdx} for userKey: ${userKey}`
+                `Failed to delete emojiIdx: ${emojiIdx} for userKey: ${userKey}`,
             );
             res.sendStatus(500);
             return;

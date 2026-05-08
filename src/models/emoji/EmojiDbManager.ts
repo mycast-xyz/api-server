@@ -119,11 +119,48 @@ export class EmojiDbManager {
         `;
         try {
             const rows = (await this.#db.query(
-                query
+                query,
             )) as EmojiWithUploaderDao[];
             return rows;
         } catch (e) {
             this.#logger.e('load all emojis with uploader error', e);
+            return [];
+        }
+    }
+
+    async searchEmojisWithUploader(
+        name: string,
+    ): Promise<EmojiWithUploaderDao[]> {
+        const columns = [
+            'e.idx',
+            'e.reg_date as regDate',
+            'e.type',
+            'e.name',
+            'e.image_hash as imageHash',
+            'e.thumbnail_url as thumbnailUrl',
+            'u.nickname as uploaderNickname',
+            'u.icon as uploaderIcon',
+        ];
+        const query = `
+            SELECT ${columns.join(', ')}
+            FROM emoji e
+            JOIN user u ON e.uploader_idx = u.idx
+            WHERE e.name LIKE ?
+            ORDER BY
+                CASE
+                    WHEN e.name LIKE ? THEN 1
+                    ELSE 2
+                END ASC,
+                e.reg_date DESC
+        `;
+        try {
+            const rows = (await this.#db.query(query, [
+                `%${name}%`,
+                `${name}%`,
+            ])) as EmojiWithUploaderDao[];
+            return rows;
+        } catch (e) {
+            this.#logger.e('search emojis error', e);
             return [];
         }
     }
