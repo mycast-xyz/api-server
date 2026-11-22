@@ -25,6 +25,20 @@ H.264 영상 1개와 선택적인 AAC 오디오 1개가 들어 있는 MP4만 받
 
 ## 설치 및 배포 순서
 
+### 운영 Jenkins 진입점
+
+운영 서버 파일을 SSH로 수정하거나 로컬 산출물을 복사하지 않는다. 이 저장소의 `main`을 체크아웃하는 **vega-api-server** 작업의 Execute shell 전체를 아래 명령으로 교체하고 빌드한다.
+
+```sh
+bash scripts/jenkins-deploy.sh
+```
+
+이 스크립트가 의존성 설치·컴파일·실제 미디어 자동 검사·단일 API 프로세스 확인·Node.js 22 이상으로 API 재시작·상태 확인을 수행한다. 기존 작업의 `sudo pm2` 권한을 사용하며 다른 서비스는 재시작하지 않는다. Jenkins 실행 환경의 Node.js가 22 미만이면 변경 전에 중단한다.
+
+`prepare-video.mjs`가 Jenkins 작업 안에서만 전용 저장소 `$JENKINS_HOME/mycast-data/videos`를 만들고 기존 `.env`의 DB/TLS 설정을 보존한 채 없는 VIDEO 설정을 추가한다. 기존 시스템 FFmpeg 4.2는 변경하지 않고, 별도의 FFmpeg 9.0 빌드를 FFmpeg 공식 안내에 연결된 BtbN 제공처에서 받아 배포 체크섬 검증 후 `$JENKINS_HOME/tools/mycast-video/ffmpeg-9.0`에 설치한다. 첫 설치 시 외부 다운로드가 필요하며 이후 빌드에서는 도구를 재사용한다. 라이선스·문서를 포함한 배포 디렉터리를 유지한다.
+
+실패 시 Windows 앱 릴리스를 게시하지 않는다. 코드 복구는 이 변경을 Git에서 revert한 다음 Jenkins를 다시 빌드하는 방식으로 수행한다. 데이터 디렉터리는 Git 체크아웃·workspace 정리와 분리되어 있다. 아래 수동 설치 설명은 설정 값의 의미를 설명하는 참고 자료이며, 운영 적용은 위 Jenkins 스크립트로만 한다.
+
 1. 기존 API의 DB·TLS 설정은 유지한다. Node.js 24에서 검사했다. 해당 서버에 FFmpeg/FFprobe를 설치하고 서비스 계정으로 실행 가능한지 확인한다. Windows 빌드는 [FFmpeg 공식 다운로드 안내](https://ffmpeg.org/download.html#build-windows)에 연결된 제공처에서 받을 수 있다.
 2. `.env.video.example`을 참고해 기존 서비스 환경변수에 설정을 추가한다. Linux 예: `VIDEO_DIR=/var/lib/mycast/videos`. Windows 예: `VIDEO_DIR=F:/MycastServer/data/videos`. 저장 디렉터리는 배포 소스 디렉터리 밖에 두고, 서비스 계정에만 쓰기 권한을 준다.
 3. `pnpm install --frozen-lockfile`, `pnpm build` 후 기존 API 프로세스를 재시작한다. 새 `/video` 경로는 기존 HTTPS API 포트 `9011`을 사용한다. 영상 파일 디렉터리를 별도 정적 경로로 노출하지 않는다.
