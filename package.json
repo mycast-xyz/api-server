@@ -7,6 +7,7 @@
         "test": "vitest run src",
         "lint": "tslint --project .",
         "build": "tsc",
+        "postbuild": "node scripts/jenkins-postbuild.mjs",
         "build-watch": "tsc --watch",
         "pm2": "sudo pm2 start dist/index.js --name api"
     },
