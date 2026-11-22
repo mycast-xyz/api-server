@@ -1,5 +1,6 @@
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
+import cors = require('cors');
 import { readFileSync } from 'fs';
 import * as http from 'http';
 import * as https from 'https';
@@ -26,6 +27,7 @@ import { TwitchRouter } from './route/twitch/TwitchRouter';
 import { UserRouter } from './route/user/UserRouter';
 import { UsersRouter } from './route/users/UsersRouter';
 import { ChzzkRouter } from './route/chzzk/ChzzkRouter';
+import { VideoRouter } from './route/video/VideoRouter';
 
 export class ExpressServerManager implements IServerManager {
     private static ERROR_MSG = 'ERROR';
@@ -89,6 +91,13 @@ export class ExpressServerManager implements IServerManager {
         const app = express();
         const server = new http.Server(app);
 
+        // Keep upload CORS and its small JSON reservation separate from legacy routes.
+        app.use('/video', cors({
+            origin: (origin, done) => done(null, !origin || this.isWhiteList(origin) || origin === 'https://mycast-player.invalid'),
+            methods: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+            allowedHeaders: ['Content-Type', 'Authorization', 'Range'],
+            exposedHeaders: ['Content-Length', 'Content-Range', 'Accept-Ranges']
+        }), bodyParser.json({ limit: '16kb' }), new VideoRouter().getRouter());
         app.use(bodyParser.json({ limit: '20mb' }));
         app.use(bodyParser.urlencoded({ extended: true, limit: '20mb' }));
 
@@ -228,6 +237,7 @@ export class ExpressServerManager implements IServerManager {
         const whiteList = [
             'http://localhost:4200',
             'http://localhost:5000',
+            'http://localhost:5173',
             'http://mycast.xyz',
             'https://mycast.xyz',
             'https://test.mycast.xyz',

@@ -1,4 +1,4 @@
-import * as cors from 'cors';
+import cors = require('cors');
 import { Router } from 'express';
 
 import { Logger } from '../../../util/Logger';
@@ -17,7 +17,7 @@ export class BaseRouter {
     protected mLogger: Logger;
     private mRouter: Router;
 
-    public constructor() {
+    public constructor(additionalOrigins: string[] = []) {
         this.mLogger = new Logger('BaseRouter');
         this.mRouter = Router();
         const corsOpt: cors.CorsOptions = {
@@ -25,7 +25,7 @@ export class BaseRouter {
                 if (!origin) {
                     this.mLogger.v(`accept: server to server`);
                     callback(null, true);
-                } else if (BaseRouter.sWhiteList.indexOf(origin) !== -1) {
+                } else if (BaseRouter.sWhiteList.indexOf(origin) !== -1 || additionalOrigins.includes(origin)) {
                     callback(null, true);
                 } else {
                     this.mLogger.e(`rejected: ${origin}`);

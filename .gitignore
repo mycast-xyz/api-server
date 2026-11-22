@@ -136,3 +136,6 @@ dist/**/*
 
 ## env file
 .env
+
+# Uploaded videos are runtime data, not source code.
+/data/videos/

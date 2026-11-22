@@ -2,6 +2,8 @@
 
 MyCast 서비스를 위한 TypeScript 기반의 백엔드 API 서버입니다. 다양한 외부 데이터 소스를 통합하고 이모지 관리 및 유저 편의 기능을 제공합니다.
 
+채팅 동영상 첨부의 제한·설치·배포 순서·검사는 [VIDEO-UPLOAD.ko.md](VIDEO-UPLOAD.ko.md)를 참고하세요.
+
 ## 🚀 주요 기능
 
 ### 1. 이모지 시스템 (Emoji Management)
