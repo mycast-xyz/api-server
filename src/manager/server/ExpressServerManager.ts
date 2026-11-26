@@ -28,6 +28,7 @@ import { UserRouter } from './route/user/UserRouter';
 import { UsersRouter } from './route/users/UsersRouter';
 import { ChzzkRouter } from './route/chzzk/ChzzkRouter';
 import { VideoRouter } from './route/video/VideoRouter';
+import { UserBotRouter } from './route/userbot/UserBotRouter';
 
 export class ExpressServerManager implements IServerManager {
     private static ERROR_MSG = 'ERROR';
@@ -98,6 +99,7 @@ export class ExpressServerManager implements IServerManager {
             allowedHeaders: ['Content-Type', 'Authorization', 'Range'],
             exposedHeaders: ['Content-Length', 'Content-Range', 'Accept-Ranges']
         }), bodyParser.json({ limit: '16kb' }), new VideoRouter().getRouter());
+        app.use('/user-bots', bodyParser.json({ limit: '16kb' }), new UserBotRouter().getRouter());
         app.use(bodyParser.json({ limit: '20mb' }));
         app.use(bodyParser.urlencoded({ extended: true, limit: '20mb' }));
 
